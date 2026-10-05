@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Avocado QR cards</title>
+<style>
+@page{size:A4;margin:8mm}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1c1b17;background:#fff}
+.sheet{display:grid;grid-template-columns:1fr 1fr;gap:6mm;padding:6mm;max-width:210mm;margin:0 auto}.tcard{border:2px dashed #aaa;border-radius:6mm;padding:7mm 5mm;text-align:center;display:grid;justify-items:center;gap:4mm;break-inside:avoid;height:134mm;align-content:center}
+.tcard h1{font:800 20pt/1.1 system-ui,sans-serif;margin:0}.qr{width:60mm;height:60mm;line-height:0}.qr svg{width:100%;height:100%}.scan{font:700 14pt system-ui,sans-serif;margin:0}.note{max-width:210mm;margin:8px auto;font:14px system-ui;color:#555;padding:0 6mm}@media print{.note{display:none}}
+</style></head><body>
+<p class="note">Print this page (Ctrl or Cmd + P) on A4, scale 100%, background graphics on. Cut along the dashed lines. Each QR opens https://Sharathpoojari5.github.io/AR-QR/avocado/</p>
+<div class="sheet"><div class="tcard"><h1>Avocado</h1><div class="qr"></div><p class="scan">Scan to see it in AR</p></div><div class="tcard"><h1>Avocado</h1><div class="qr"></div><p class="scan">Scan to see it in AR</p></div><div class="tcard"><h1>Avocado</h1><div class="qr"></div><p class="scan">Scan to see it in AR</p></div><div class="tcard"><h1>Avocado</h1><div class="qr"></div><p class="scan">Scan to see it in AR</p></div></div>
+<script src="qrcode.js"></script>
+<script>
+var url = "https://Sharathpoojari5.github.io/AR-QR/avocado/";
+document.querySelectorAll(".qr").forEach(function(b){ var q = qrcode(0, "M"); q.addData(url); q.make(); b.innerHTML = q.createSvgTag({cellSize: 4, margin: 2, scalable: true}); });
+</script></body></html>
