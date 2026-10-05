@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>aashirwaad table cards</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@600;800&family=Hanken+Grotesk:wght@500;700&family=Noto+Sans+Kannada:wght@600;700&display=swap">
+<style>
+@page{size:A4;margin:8mm}*{box-sizing:border-box}body{margin:0;font-family:"Hanken Grotesk","Noto Sans Kannada",system-ui,sans-serif;color:#14231b;background:#fff}
+.sheet{display:grid;grid-template-columns:1fr 1fr;gap:6mm;padding:6mm;max-width:210mm;margin:0 auto}.tcard{border:2px dashed #9aa88f;border-radius:6mm;padding:7mm 5mm;text-align:center;display:grid;justify-items:center;gap:3mm;break-inside:avoid;height:134mm;align-content:center}
+.tcard h1{font:800 22pt/1.05 "Baloo Tamma 2","Noto Sans Kannada",sans-serif;margin:0}.tcard .kn{font:700 13pt "Noto Sans Kannada",sans-serif;color:#2c6a46;margin:0}.qr{width:58mm;height:58mm;line-height:0}.qr svg{width:100%;height:100%}
+.scan{font:800 15pt "Baloo Tamma 2",sans-serif;margin:0}.scan2{font:600 11pt "Noto Sans Kannada",sans-serif;margin:0;color:#3b4d40}.note{max-width:210mm;margin:8px auto;font:14px system-ui;color:#555;padding:0 6mm}@media print{.note{display:none}.tcard{border-color:#bbb}}
+</style></head><body>
+<p class="note">Print this page (Ctrl or Cmd + P) on A4 and cut along the dashed lines. Each QR opens https://sharathpoojari5.github.io/AR-QR/aashirwaad/</p>
+<div class="sheet"><div class="tcard"><h1>aashirwaad</h1><p class="kn"></p><div class="qr"></div><p class="scan">Scan to see your food in 3D</p><p class="scan2">ಸ್ಕ್ಯಾನ್ ಮಾಡಿ, ನಿಮ್ಮ ತಿಂಡಿಯನ್ನು 3D ಯಲ್ಲಿ ನೋಡಿ</p></div><div class="tcard"><h1>aashirwaad</h1><p class="kn"></p><div class="qr"></div><p class="scan">Scan to see your food in 3D</p><p class="scan2">ಸ್ಕ್ಯಾನ್ ಮಾಡಿ, ನಿಮ್ಮ ತಿಂಡಿಯನ್ನು 3D ಯಲ್ಲಿ ನೋಡಿ</p></div><div class="tcard"><h1>aashirwaad</h1><p class="kn"></p><div class="qr"></div><p class="scan">Scan to see your food in 3D</p><p class="scan2">ಸ್ಕ್ಯಾನ್ ಮಾಡಿ, ನಿಮ್ಮ ತಿಂಡಿಯನ್ನು 3D ಯಲ್ಲಿ ನೋಡಿ</p></div><div class="tcard"><h1>aashirwaad</h1><p class="kn"></p><div class="qr"></div><p class="scan">Scan to see your food in 3D</p><p class="scan2">ಸ್ಕ್ಯಾನ್ ಮಾಡಿ, ನಿಮ್ಮ ತಿಂಡಿಯನ್ನು 3D ಯಲ್ಲಿ ನೋಡಿ</p></div></div>
+<script src="qrcode.js"></script>
+<script>
+var url = "https://sharathpoojari5.github.io/AR-QR/aashirwaad/";
+document.querySelectorAll(".qr").forEach(function(b){ var q = qrcode(0, "M"); q.addData(url); q.make(); b.innerHTML = q.createSvgTag({cellSize: 4, margin: 2, scalable: true}); });
+</script></body></html>
