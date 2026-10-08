@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Make an AR QR code</title>
+<meta name="description" content="Upload a 3D model, type its real height, get a QR code that shows it in AR at true size.">
+<style>
+:root{--bg:#f5f3ec;--card:#fff;--ink:#1c1b17;--mut:#6b6a62;--line:#e2dfd3;--acc:#2d6a4f;--warn:#8a5a00;--warnbg:#fff4d6;--err:#a12a2a;--errbg:#fde8e8}
+@media(prefers-color-scheme:dark){:root{--bg:#161512;--card:#201f1b;--ink:#f1efe6;--mut:#a3a197;--line:#38362e;--acc:#6dbf93;--warn:#f2c36b;--warnbg:#3a2f12;--err:#ff9b9b;--errbg:#3b1b1b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 60px}h1{font-size:28px;line-height:1.2;margin:0 0 6px}.sub{color:var(--mut);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:26px;text-align:center;cursor:pointer;color:var(--mut)}#drop.on{border-color:var(--acc);color:var(--ink)}#drop b{color:var(--ink)}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 20px;background:var(--acc);color:#fff;cursor:pointer}button:disabled{opacity:.5;cursor:default}button.ghost{background:transparent;color:var(--acc);border:1.5px solid var(--acc);padding:10px 16px}
+#go{width:100%;margin-top:16px;font-size:17px}
+.msg{padding:10px 12px;border-radius:9px;margin:10px 0;font-size:14px}.warn{background:var(--warnbg);color:var(--warn)}.err{background:var(--errbg);color:var(--err)}.note{background:var(--bg);color:var(--mut)}
+#out{display:none}.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;align-items:start}@media(max-width:640px){.grid{grid-template-columns:1fr}}
+model-viewer{width:100%;height:300px;background:var(--bg);border-radius:12px}#qr{width:100%;max-width:240px;background:#fff;border-radius:8px;display:block;margin:0 auto}
+pre{font:13px/1.45 ui-monospace,Menlo,monospace;background:var(--bg);padding:10px 12px;border-radius:9px;overflow:auto;margin:8px 0;white-space:pre-wrap;word-break:break-all}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.small{font-size:13px;color:var(--mut)}a{color:var(--acc)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+#card{display:none}
+@media print{body>*:not(#card){display:none!important}#card{display:block;width:90mm;margin:10mm auto;border:2px dashed #aaa;border-radius:6mm;padding:8mm;text-align:center;color:#000;background:#fff}#card h1{font-size:22pt;margin:0 0 4mm}#card img{width:62mm;height:62mm}#card p{font-weight:700;font-size:14pt;margin:4mm 0 0}}
+</style></head><body>
+<main>
+<h1>See any object in AR, from a QR code</h1>
+<p class="sub">Upload a 3D model, type its real height, and get a QR code. Anyone who scans it sees the object at true size in their own room.</p>
+
+<div class="card"><h2>Your 3D model</h2>
+<div id="drop"><b>Drop a .glb file here</b> or tap to choose<div class="small" id="fname">Export your scan as GLB from Polycam, RealityScan or Kiri</div></div><input id="file" type="file" accept=".glb" hidden>
+<label for="name">Product name</label><input id="name" maxlength="60" placeholder="e.g. Teak 3-seater sofa">
+<div class="row"><div><label for="dim">Which real size do you know?</label><select id="dim"><option value="height">Height</option><option value="width">Width (left to right)</option><option value="depth">Depth (front to back)</option></select></div>
+<div><label for="cm">Size in cm</label><input id="cm" type="number" inputmode="decimal" min="0.5" step="0.1" placeholder="e.g. 85"></div></div>
+<div id="pcwrap" style="display:none"><label for="passcode">Passcode</label><input id="passcode" type="password" autocomplete="off"></div>
+<button id="go" disabled>Make my QR code</button><div id="err"></div></div>
+
+<div class="card" id="out"><h2>Done</h2>
+<div class="grid"><div><model-viewer id="pv" camera-controls auto-rotate shadow-intensity="1" exposure="1.05" interaction-prompt="none"></model-viewer></div>
+<div><img id="qr" alt="QR code"><div class="kv"><span>Real size</span><span id="sz"></span></div></div></div>
+<div id="msgs"></div>
+<p class="small" style="margin:14px 0 0">Your page (this is what the QR opens):</p><pre id="url"></pre>
+<div class="btns"><a id="dl"><button class="ghost" type="button">Download QR</button></a><button class="ghost" id="print" type="button">Print card</button><button class="ghost" id="copy" type="button">Copy link</button><button class="ghost" id="again" type="button">Make another</button></div>
+<p class="small">Scan it with a phone camera to test. It works on Android and iPhone. Your QR codes are saved on this device below.</p></div>
+
+<div class="card" id="minewrap" style="display:none"><h2>Your QR codes on this device</h2><div id="mine"></div><p class="small">Deleting removes the model and the QR will stop working.</p></div>
+</main>
+<div id="card"><h1 id="cardname"></h1><img id="cardqr" alt="QR"><p>Scan to see it in your room (AR)</p></div>
+<script type="module" src="/model-viewer.min.js"></script>
+<script src="/app.js"></script>
+</body></html>

@@ -1,0 +1,12 @@
+name = "ar-qr-maker"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[[r2_buckets]]
+binding = "MODELS"
+bucket_name = "ar-models"
