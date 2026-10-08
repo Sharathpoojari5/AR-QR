@@ -1,0 +1,29 @@
+#!/bin/bash
+# AR Publisher launcher: starts the local server (first run installs it) and opens the page.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+APP_PARENT="$(cd "$HERE/../../.." && pwd)"          # folder that holds AR Publisher.app (AR-QR/tools)
+PUB="$APP_PARENT/publisher"
+[ -f "$PUB/server.mjs" ] || PUB="$HOME/Documents/GitHub/AR-QR/tools/publisher"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+for d in "$HOME"/.nvm/versions/node/*/bin "$HOME"/.volta/bin "$HOME"/.fnm/aliases/default/bin; do [ -d "$d" ] && PATH="$d:$PATH"; done
+LOG="$HOME/Library/Logs/AR-Publisher.log"; mkdir -p "$(dirname "$LOG")"
+URL="http://localhost:4173"
+OPEN="${OPEN_CMD:-open}"
+say_box(){ osascript -e "display dialog \"$1\" buttons {\"OK\"} default button 1 with icon caution with title \"AR Publisher\"" >/dev/null 2>&1; }
+
+if ! command -v node >/dev/null 2>&1; then
+  if osascript -e 'display dialog "AR Publisher needs Node.js (free). Click Get Node.js, install the LTS version, then open AR Publisher again." buttons {"Cancel","Get Node.js"} default button 2 with icon caution with title "AR Publisher"' 2>/dev/null | grep -q "Get Node.js"; then $OPEN "https://nodejs.org"; fi
+  exit 0
+fi
+if [ ! -f "$PUB/server.mjs" ]; then say_box "Could not find the publisher folder. Expected it at: $PUB"; exit 1; fi
+
+if ! curl -s -o /dev/null --max-time 2 "$URL/"; then
+  if [ ! -d "$PUB/node_modules" ]; then
+    osascript -e 'display notification "First-time setup, about a minute. The page opens when ready." with title "AR Publisher"' >/dev/null 2>&1
+    (cd "$PUB" && npm install --no-audit --no-fund >>"$LOG" 2>&1) || { say_box "Setup failed. Check your internet and try again. Details: ~/Library/Logs/AR-Publisher.log"; exit 1; }
+  fi
+  (cd "$PUB" && nohup node server.mjs >>"$LOG" 2>&1 &)
+  for i in $(seq 1 40); do curl -s -o /dev/null --max-time 1 "$URL/" && break; sleep 0.5; done
+  curl -s -o /dev/null --max-time 1 "$URL/" || { say_box "AR Publisher did not start. Details: ~/Library/Logs/AR-Publisher.log"; exit 1; }
+fi
+$OPEN "$URL"

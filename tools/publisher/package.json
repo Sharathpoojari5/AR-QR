@@ -1,0 +1,15 @@
+{
+  "name": "ar-publisher",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": {
+    "@gltf-transform/core": "^4.1.0",
+    "@gltf-transform/extensions": "^4.1.0",
+    "@gltf-transform/functions": "^4.1.0",
+    "meshoptimizer": "^0.22.0",
+    "qrcode": "^1.5.4"
+  },
+  "optionalDependencies": { "sharp": "^0.33.5" }
+}

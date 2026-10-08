@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Burger in AR</title>
+<title>__NAME__ in AR</title>
 <style>
 :root{--bg:#f3f1ea;--ink:#1c1b17;--muted:#6a675c;--accent:#2c6a46;--on:#fff;--stage:#e4e1d3;--card:#fff;--line:#d8d4c4;color-scheme:light}@media (prefers-color-scheme:dark){:root{--bg:#14130f;--ink:#f3f1ea;--muted:#aaa795;--accent:#7fd0a0;--on:#10150f;--stage:#201f19;--card:#1e1d17;--line:#37352c;color-scheme:dark}}
 *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -26,8 +26,8 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
 </style></head>
 <body>
 <main>
-<header><h1>Burger</h1><p id="size">&nbsp;</p></header>
-<model-viewer id="mv" src="model.glb" alt="Burger" ar ar-modes="scene-viewer webxr quick-look" ar-scale="fixed" ar-placement="floor" camera-controls auto-rotate camera-orbit="30deg 65deg auto" shadow-intensity="1.1" exposure="1.05" interaction-prompt="none">
+<header><h1>__NAME__</h1><p id="size">&nbsp;</p></header>
+<model-viewer id="mv" src="model.glb" alt="__NAME__" ar ar-modes="scene-viewer webxr quick-look" ar-scale="fixed" ar-placement="floor" camera-controls auto-rotate camera-orbit="30deg 65deg auto" shadow-intensity="1.1" exposure="1.05" interaction-prompt="none">
   <button slot="ar-button" id="arbtn" type="button">View in your room</button>
 </model-viewer>
 <p id="tip">Drag to turn it. Tap <b>View in your room</b> to place it at its real size.</p>
@@ -35,10 +35,10 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
   <button id="cambtn" class="ghost" type="button">Quick view (no surface needed)</button>
   <button id="altbtn" class="ghost" type="button" hidden>Try Google AR viewer</button>
 </div>
-<details id="tips"><summary>Burger not appearing? Surface tips</summary>
+<details id="tips"><summary>__NAME__ not appearing? Surface tips</summary>
 <ul>
 <li>Stand 1 to 2 metres back and point the camera at the table or floor, not the wall.</li>
-<li>Move the phone <b>slowly</b> side to side, like painting the surface, until the burger appears.</li>
+<li>Move the phone <b>slowly</b> side to side, like painting the surface, until the __NAMEL__ appears.</li>
 <li>Plain or shiny tiles are hard for phones. Put a mat, newspaper or a few sheets of paper on the floor, or aim where the floor meets a skirting board or furniture.</li>
 <li>Use good, even light. Avoid very dim rooms and mirror-like floors.</li>
 <li>Still stuck? Tap <b>Try Google AR viewer</b> or <b>Quick view</b>.</li>
@@ -49,21 +49,21 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
 <h2 id="ct">Place it in 3 steps</h2>
 <ol>
 <li>Point the camera at the <b>table or floor</b> where it should go, from 1 to 2 m away.</li>
-<li>Move the phone <b>slowly</b> side to side until the burger appears.</li>
+<li>Move the phone <b>slowly</b> side to side until the __NAMEL__ appears.</li>
 <li>Drag it with one finger. Twist two fingers to turn it. Its size is locked to real size.</li>
 </ol>
 <button id="coachgo" class="go" type="button">Start AR</button></div></div>
 
 <div id="back" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="bt"><div class="panel">
-<h2 id="bt">Didn't see the burger?</h2>
+<h2 id="bt">Didn't see the __NAMEL__?</h2>
 <p style="margin:0 0 10px;color:var(--muted)">The phone could not find a surface. Move slowly, add light, and aim at a textured table or floor.</p>
 <button id="backagain" class="go" type="button">Try again</button>
 <div class="alt"><button id="backalt" class="ghost" type="button" hidden>Google AR viewer</button><button id="backcam" class="ghost" type="button">Quick view</button><button id="backok" class="ghost" type="button">Close</button></div></div></div>
 
 <div id="cam"><video id="camv" playsinline muted autoplay></video>
-<model-viewer id="mv2" src="model.glb" alt="Burger" camera-orbit="0deg 80deg 3.5m" min-camera-orbit="auto auto 0.5m" max-camera-orbit="auto auto 30m" disable-zoom disable-pan shadow-intensity="0" exposure="1.1" interaction-prompt="none"></model-viewer>
+<model-viewer id="mv2" src="model.glb" alt="__NAME__" camera-orbit="0deg 80deg 3.5m" min-camera-orbit="auto auto 0.5m" max-camera-orbit="auto auto 30m" disable-zoom disable-pan shadow-intensity="0" exposure="1.1" interaction-prompt="none"></model-viewer>
 <button id="camx" type="button">Close</button>
-<div id="camui"><div id="camhint">Burger shown at real size, as if <span id="camd">0.7 m</span> away. Drag to move it. This view is approximate, use AR for exact placement.</div>
+<div id="camui"><div id="camhint">__NAME__ shown at real size, as if <span id="camd">__DIST__ m</span> away. Drag to move it. This view is approximate, use AR for exact placement.</div>
 <div class="ctl"><button id="camturnl" type="button" aria-label="Turn left">Turn &#8630;</button><button id="camturnr" type="button" aria-label="Turn right">Turn &#8631;</button><button id="camnear" type="button">Nearer</button><button id="camfar" type="button">Farther</button></div></div></div>
 
 <script>
@@ -90,7 +90,7 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
   function startAR(){ launched = true; launchedAt = Date.now(); placed = false; mv.activateAR(); }
   function startSceneViewer(){
     var dir = location.href.split("#")[0].split("?")[0].replace(/[^\/]*$/, "");
-    var q = "file=" + encodeURIComponent(dir + "model.glb") + "&mode=ar_preferred&resizable=false&disable_occlusion=true&title=" + encodeURIComponent("Burger");
+    var q = "file=" + encodeURIComponent(dir + "model.glb") + "&mode=ar_preferred&resizable=false&disable_occlusion=true&title=" + encodeURIComponent("__NAME__");
     var fb = "https://arvr.google.com/scene-viewer/1.2?" + q;
     launched = true; launchedAt = Date.now(); placed = false;
     location.href = "intent://arvr.google.com/scene-viewer/1.2?" + q + "#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=" + encodeURIComponent(fb) + ";end;";
@@ -119,9 +119,9 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
     if (document.visibilityState === "visible" && launched && Date.now() - launchedAt > 1500) { launched = false; $("back").hidden = false; }
   });
 
-  /* Quick view: camera feed + true-size burger, drag to move, no floor detection needed */
+  /* Quick view: camera feed + true-size __NAMEL__, drag to move, no floor detection needed */
   var cam = $("cam"), camv = $("camv"), stream = null;
-  var FOV = 60, dist = 0.7, yaw = 25, PHI = 80, pos = { x: 0, y: 0 }, cy = 0.35;
+  var FOV = 60, dist = __DIST__, yaw = 25, PHI = 80, pos = { x: 0, y: 0 }, cy = 0.35;
   function visH(){ return 2 * dist * Math.tan(FOV * Math.PI / 360); }
   function radius(){ var a = mv2.getFieldOfView ? mv2.getFieldOfView() : 45; if (!(a > 5 && a < 150)) a = 45; return dist * Math.tan(FOV * Math.PI / 360) / Math.tan(a * Math.PI / 360); }
   function applyCam(jump){
@@ -134,7 +134,7 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
     $("camd").textContent = dist.toFixed(1) + " m";
     if (jump && mv2.jumpCameraToGoal) mv2.jumpCameraToGoal();
   }
-  /* model-viewer picks its own field of view, so we read it and place the camera at the distance that makes the burger
+  /* model-viewer picks its own field of view, so we read it and place the camera at the distance that makes the __NAMEL__
      appear the same size a real phone camera (60 degree view) would show it at the chosen distance */
   function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
   function settle(){ return mv2.updateComplete.then(function(){ mv2.jumpCameraToGoal(); return sleep(200); }); }
@@ -153,8 +153,8 @@ details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;bac
   $("camui").addEventListener("pointerdown", function(e){ e.stopPropagation(); });
   $("camturnl").addEventListener("click", function(){ yaw -= 30; applyCam(false); });
   $("camturnr").addEventListener("click", function(){ yaw += 30; applyCam(false); });
-  $("camnear").addEventListener("click", function(){ dist = Math.max(0.4, dist - 0.2); applyCam(false); });
-  $("camfar").addEventListener("click", function(){ dist = Math.min(2, dist + 0.2); applyCam(false); });
+  $("camnear").addEventListener("click", function(){ dist = Math.max(__DMIN__, dist - __STEP__); applyCam(false); });
+  $("camfar").addEventListener("click", function(){ dist = Math.min(__DMAX__, dist + __STEP__); applyCam(false); });
   var drag = null;
   cam.addEventListener("pointerdown", function(e){ if (e.target.closest("button")) return; drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; cam.setPointerCapture(e.pointerId); });
   cam.addEventListener("pointermove", function(e){

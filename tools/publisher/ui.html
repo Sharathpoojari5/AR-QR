@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AR Publisher</title>
+<style>
+:root{--bg:#f5f3ec;--card:#fff;--ink:#1c1b17;--mut:#6b6a62;--line:#e2dfd3;--acc:#2d6a4f;--accd:#1f4d39;--warn:#8a5a00;--warnbg:#fff4d6;--err:#a12a2a;--errbg:#fde8e8}
+@media(prefers-color-scheme:dark){:root{--bg:#161512;--card:#201f1b;--ink:#f1efe6;--mut:#a3a197;--line:#38362e;--acc:#6dbf93;--accd:#8bd3ab;--warn:#f2c36b;--warnbg:#3a2f12;--err:#ff9b9b;--errbg:#3b1b1b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-size:26px;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+#drop{border:2px dashed var(--line);border-radius:12px;padding:26px;text-align:center;cursor:pointer;color:var(--mut)}#drop.on{border-color:var(--acc);color:var(--ink)}#drop b{color:var(--ink)}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 18px;background:var(--acc);color:#fff;cursor:pointer}button:disabled{opacity:.5;cursor:default}button.ghost{background:transparent;color:var(--acc);border:1.5px solid var(--acc)}
+.msg{padding:10px 12px;border-radius:9px;margin:10px 0;font-size:14px}.warn{background:var(--warnbg);color:var(--warn)}.err{background:var(--errbg);color:var(--err)}.note{background:var(--bg);color:var(--mut)}
+#out{display:none}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+model-viewer{width:100%;height:320px;background:var(--bg);border-radius:12px}#qr{width:100%;max-width:240px;image-rendering:pixelated;background:#fff;border-radius:8px;display:block;margin:0 auto}
+code,pre{font:13px/1.45 ui-monospace,Menlo,monospace}pre{background:var(--bg);padding:12px;border-radius:9px;overflow:auto;margin:8px 0;white-space:pre-wrap;word-break:break-all}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.kv span:first-child{color:var(--mut)}
+a{color:var(--acc)}.small{font-size:13px;color:var(--mut)}
+</style></head><body><main>
+<h1>AR Publisher</h1><p class="sub">Drop a 3D scan, type its real size, get the AR page and the QR code.</p>
+
+<div class="card"><h2>1 · The model</h2>
+<div id="drop"><b>Drop a .glb file here</b> or click to choose<div class="small" id="fname">Export your scan from Polycam, RealityScan or Kiri as GLB</div></div><input id="file" type="file" accept=".glb" hidden>
+<div class="row"><div><label for="name">Product name (shown on the page)</label><input id="name" placeholder="e.g. Teak 3-seater sofa"></div>
+<div><label for="slug">Web address ending (auto)</label><input id="slug" placeholder="teak-3-seater-sofa"></div></div>
+<div class="row"><div><label for="dim">Which real measurement do you know?</label><select id="dim"><option value="height">Height</option><option value="width">Width (left to right)</option><option value="depth">Depth (front to back)</option></select></div>
+<div><label for="cm">That measurement, in cm</label><input id="cm" type="number" min="0.5" step="0.1" placeholder="e.g. 85"></div></div>
+<p class="small">Measure the real object with a tape. This is what makes it appear at true size in the customer's room.</p>
+<button id="go" disabled>Build page and QR</button><div id="err"></div></div>
+
+<div class="card" id="out"><h2>2 · Check it</h2>
+<div class="grid"><div><model-viewer id="pv" camera-controls auto-rotate shadow-intensity="1" exposure="1.05" interaction-prompt="none"></model-viewer></div>
+<div><img id="qr" alt="QR code"><div class="kv" style="margin-top:12px"><span>Size</span><span id="sz"></span></div><div class="kv"><span>Triangles</span><span id="tri"></span></div><div class="kv"><span>File</span><span id="mb"></span></div></div></div>
+<div id="msgs"></div>
+<h2 style="margin-top:18px">3 · Put it online</h2>
+<p class="small" style="margin:0">Files were written to <code id="dir"></code>. In Terminal run:</p><pre id="git"></pre>
+<p class="small" style="margin:0">Wait about a minute, then scan the QR with a phone. The page will be at:</p><pre id="url"></pre>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><a id="dl" download="qr.png"><button class="ghost" type="button">Download QR</button></a><a id="card" target="_blank"><button class="ghost" type="button">Open print card</button></a><button class="ghost" id="copy" type="button">Copy command</button></div></div>
+
+<div class="card"><h2>Settings</h2><label for="base">Public web address of your AR folder (the QR points here)</label><input id="base">
+<p class="small">For paying clients use your own domain, e.g. https://ar.yourbrand.in, so printed QRs survive a change of hosting. <button class="ghost" id="saveb" style="padding:6px 12px;margin-left:6px" type="button">Save</button></p></div>
+<p class="small" style="text-align:center"><button class="ghost" id="quit" style="padding:6px 14px" type="button">Quit AR Publisher</button></p>
+</main>
+<script type="module" src="/mv.js"></script>
+<script>
+const $=id=>document.getElementById(id);let file=null,slugEdited=false;
+const slugify=s=>s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
+function check(){ $('go').disabled=!(file&&$('name').value.trim()&&parseFloat($('cm').value)>0); }
+function pick(f){ if(!f)return; if(!/\.glb$/i.test(f.name)){ $('err').innerHTML='<div class="msg err">Please choose a .glb file.</div>'; return;} $('err').innerHTML=''; file=f; $('fname').textContent=f.name+' ('+(f.size/1048576).toFixed(1)+' MB)'; $('drop').classList.add('on');
+  if(!$('name').value){ $('name').value=f.name.replace(/\.glb$/i,'').replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase()); if(!slugEdited)$('slug').value=slugify($('name').value);} check(); }
+$('drop').onclick=()=>$('file').click(); $('file').onchange=e=>pick(e.target.files[0]);
+['dragover','dragenter'].forEach(t=>$('drop').addEventListener(t,e=>{e.preventDefault();$('drop').classList.add('on')}));
+$('drop').addEventListener('drop',e=>{e.preventDefault();pick(e.dataTransfer.files[0])});
+$('name').oninput=()=>{ if(!slugEdited)$('slug').value=slugify($('name').value); check(); }; $('slug').oninput=()=>{slugEdited=true}; $('cm').oninput=check;
+fetch('/api/config').then(r=>r.json()).then(c=>{$('base').value=c.baseUrl});
+$('saveb').onclick=async()=>{ const r=await fetch('/api/config',{method:'POST',body:JSON.stringify({baseUrl:$('base').value.trim()})}); $('saveb').textContent=r.ok?'Saved':'Failed'; setTimeout(()=>$('saveb').textContent='Save',1500); };
+$('go').onclick=async()=>{
+  $('go').disabled=true; $('go').textContent='Working...'; $('err').innerHTML='';
+  const q=new URLSearchParams({name:$('name').value.trim(),slug:$('slug').value.trim(),[$('dim').value]:$('cm').value});
+  try{
+    const r=await fetch('/api/publish?'+q,{method:'POST',body:file}); const j=await r.json(); if(!r.ok) throw new Error(j.error||'Failed');
+    const R=j.report, t=Date.now();
+    $('pv').src=j.preview+'?t='+t; $('qr').src=j.qr+'?t='+t; $('dl').href=j.qr; $('card').href='/files/'+j.slug+'/card.html';
+    $('sz').textContent=R.sizeCm.w.toFixed(0)+' × '+R.sizeCm.d.toFixed(0)+' × '+R.sizeCm.h.toFixed(0)+' cm (W×D×H)'; $('tri').textContent=R.triangles.toLocaleString(); $('mb').textContent=R.mb.toFixed(1)+' MB';
+    $('msgs').innerHTML=R.warnings.map(w=>'<div class="msg warn">'+w+'</div>').join('')+R.notes.map(w=>'<div class="msg note">'+w+'</div>').join('')+(j.existed?'<div class="msg note">That folder already existed, so its files were replaced.</div>':'');
+    $('dir').textContent=j.dir; $('url').textContent=j.url;
+    const git='cd "'+j.dir.replace(/\/[^\/]+$/,'')+'" && git add "'+j.slug+'" && git commit -m "Add '+$('name').value.trim().replace(/["$`\\]/g,'')+'" && git push'; $('git').textContent=git;
+    $('out').style.display='block'; $('out').scrollIntoView({behavior:'smooth'});
+  }catch(e){ $('err').innerHTML='<div class="msg err">'+e.message+'</div>'; }
+  $('go').textContent='Build page and QR'; check();
+};
+$('quit').onclick=async()=>{ if(!confirm('Quit AR Publisher? Open the app again to use it.'))return; try{await fetch('/api/quit',{method:'POST'})}catch(e){} document.body.innerHTML='<main><h1>AR Publisher stopped</h1><p class="sub">You can close this tab. Open the app again to continue.</p></main>'; };
+$('copy').onclick=()=>{navigator.clipboard.writeText($('git').textContent);$('copy').textContent='Copied';setTimeout(()=>$('copy').textContent='Copy command',1500)};
+</script></body></html>
