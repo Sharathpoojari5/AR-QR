@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Burger in AR</title>
+<style>
+:root{--bg:#f3f1ea;--ink:#1c1b17;--muted:#6a675c;--accent:#2c6a46;--on:#fff;--stage:#e4e1d3;--card:#fff;--line:#d8d4c4;color-scheme:light}@media (prefers-color-scheme:dark){:root{--bg:#14130f;--ink:#f3f1ea;--muted:#aaa795;--accent:#7fd0a0;--on:#10150f;--stage:#201f19;--card:#1e1d17;--line:#37352c;color-scheme:dark}}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font-family:inherit}[hidden]{display:none!important}
+main{min-height:100%;display:flex;flex-direction:column}header{padding:18px 18px 4px}h1{margin:0;font-size:24px;line-height:1.2}header p{margin:4px 0 0;color:var(--muted);font-size:14px}
+model-viewer{flex:1;min-height:56vh;width:100%;background:radial-gradient(ellipse at 50% 65%,var(--stage),transparent 75%);--poster-color:transparent;--progress-bar-color:var(--accent)}
+#arbtn{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:var(--accent);color:var(--on);font:700 18px system-ui,sans-serif;padding:16px 30px;border:0;border-radius:999px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#tip{margin:0;padding:10px 18px 4px;font-size:14px;color:var(--muted)}
+#row{padding:8px 18px 6px;display:flex;flex-wrap:wrap;gap:10px}
+.ghost{background:transparent;color:var(--accent);font:700 15px system-ui,sans-serif;padding:11px 18px;border:2px solid var(--accent);border-radius:999px}
+details{margin:6px 18px 22px;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:10px 14px;font-size:14px}summary{font-weight:700;cursor:pointer}details ul{margin:8px 0 0;padding-left:20px;color:var(--muted)}details li{margin:4px 0}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.panel{width:100%;max-width:480px;background:var(--card);border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.3)}
+.panel h2{margin:0 0 10px;font-size:20px}.panel ol{margin:0 0 14px;padding-left:22px}.panel li{margin:6px 0}
+.panel .go{display:block;width:100%;background:var(--accent);color:var(--on);font:700 17px system-ui,sans-serif;padding:15px;border:0;border-radius:999px}
+.panel .alt{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.panel .alt button{flex:1;min-width:120px}
+#cam{position:fixed;inset:0;z-index:5;background:#000;display:none;touch-action:none;overflow:hidden}#cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cam model-viewer{position:absolute;inset:0;width:100%;height:100%;min-height:0;background:transparent;pointer-events:none}
+#camui{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:10px 12px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px;align-items:center;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+#camhint{color:#fff;font:13px/1.35 system-ui,sans-serif;text-align:center;text-shadow:0 1px 4px #000;max-width:420px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.ctl button{background:rgba(0,0,0,.6);color:#fff;font:700 15px system-ui,sans-serif;padding:10px 16px;border:1px solid rgba(255,255,255,.35);border-radius:999px}
+#camx{position:absolute;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:7;background:rgba(0,0,0,.6);color:#fff;font:700 16px system-ui,sans-serif;padding:10px 16px;border:0;border-radius:999px}
+</style></head>
+<body>
+<main>
+<header><h1>Burger</h1><p id="size">&nbsp;</p></header>
+<model-viewer id="mv" src="model.glb" alt="Burger" ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" camera-controls auto-rotate camera-orbit="30deg 65deg auto" shadow-intensity="1.1" exposure="1.05" interaction-prompt="none">
+  <button slot="ar-button" id="arbtn" type="button">View in your room</button>
+</model-viewer>
+<p id="tip">Drag to turn it. Tap <b>View in your room</b> to place it at its real size.</p>
+<div id="row">
+  <button id="cambtn" class="ghost" type="button">Quick view (no surface needed)</button>
+  <button id="altbtn" class="ghost" type="button" hidden>Try Google AR viewer</button>
+</div>
+<details id="tips"><summary>Burger not appearing? Surface tips</summary>
+<ul>
+<li>Stand 1 to 2 metres back and point the camera at the table or floor, not the wall.</li>
+<li>Move the phone <b>slowly</b> side to side, like painting the surface, until the burger appears.</li>
+<li>Plain or shiny tiles are hard for phones. Put a mat, newspaper or a few sheets of paper on the floor, or aim where the floor meets a skirting board or furniture.</li>
+<li>Use good, even light. Avoid very dim rooms and mirror-like floors.</li>
+<li>Still stuck? Tap <b>Try Google AR viewer</b> or <b>Quick view</b>.</li>
+</ul></details>
+</main>
+
+<div id="coach" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="ct"><div class="panel">
+<h2 id="ct">Place it in 3 steps</h2>
+<ol>
+<li>Point the camera at the <b>table or floor</b> where it should go, from 1 to 2 m away.</li>
+<li>Move the phone <b>slowly</b> side to side until the burger appears.</li>
+<li>Drag it with one finger. Twist two fingers to turn it. Its size is locked to real size.</li>
+</ol>
+<button id="coachgo" class="go" type="button">Start AR</button></div></div>
+
+<div id="back" class="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="bt"><div class="panel">
+<h2 id="bt">Didn't see the burger?</h2>
+<p style="margin:0 0 10px;color:var(--muted)">The phone could not find a surface. Move slowly, add light, and aim at a textured table or floor.</p>
+<button id="backagain" class="go" type="button">Try again</button>
+<div class="alt"><button id="backalt" class="ghost" type="button" hidden>Google AR viewer</button><button id="backcam" class="ghost" type="button">Quick view</button><button id="backok" class="ghost" type="button">Close</button></div></div></div>
+
+<div id="cam"><video id="camv" playsinline muted autoplay></video>
+<model-viewer id="mv2" src="model.glb" alt="Burger" camera-orbit="0deg 80deg 3.5m" min-camera-orbit="auto auto 0.5m" max-camera-orbit="auto auto 30m" disable-zoom disable-pan shadow-intensity="0" exposure="1.1" interaction-prompt="none"></model-viewer>
+<button id="camx" type="button">Close</button>
+<div id="camui"><div id="camhint">Burger shown at real size, as if <span id="camd">0.7 m</span> away. Drag to move it. This view is approximate, use AR for exact placement.</div>
+<div class="ctl"><button id="camturnl" type="button" aria-label="Turn left">Turn &#8630;</button><button id="camturnr" type="button" aria-label="Turn right">Turn &#8631;</button><button id="camnear" type="button">Nearer</button><button id="camfar" type="button">Farther</button></div></div></div>
+
+<script>
+(function(){
+  function $(id){ return document.getElementById(id); }
+  var mv = $("mv"), mv2 = $("mv2"), tip = $("tip"), ua = navigator.userAgent;
+  var android = /Android/i.test(ua);
+  var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var inApp = /FBAN|FBAV|Instagram|Line\/|MicroMessenger|Snapchat|Twitter|; wv\)|GSA\//i.test(ua);
+  var browser = ios ? "Safari" : "Chrome";
+  var store = { get: function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set: function(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+  var launched = false, launchedAt = 0, placed = false;
+
+  /* real size label */
+  mv.addEventListener("load", function(){
+    var d = mv.getDimensions(), c = function(v){ return Math.round(v * 100); };
+    $("size").textContent = "Real size: " + c(d.x) + " wide × " + c(d.z) + " deep × " + c(d.y) + " high (cm). Locked in AR.";
+    if (!mv.canActivateAR) tip.textContent = "AR is not available here. " + (inApp ? "Open this page in " + browser + " (menu, then Open in browser)." : "Try " + browser + " on an AR phone, or use Quick view.");
+    else if (inApp) tip.textContent = "If AR does not start, open this page in " + browser + " (menu, then Open in browser).";
+  });
+  mv.addEventListener("error", function(){ tip.textContent = "The 3D model could not load. Check your internet connection and reload the page."; });
+
+  /* launching AR */
+  function startAR(){ launched = true; launchedAt = Date.now(); placed = false; mv.activateAR(); }
+  function startSceneViewer(){
+    var dir = location.href.split("#")[0].split("?")[0].replace(/[^\/]*$/, "");
+    var q = "file=" + encodeURIComponent(dir + "model.glb") + "&mode=ar_preferred&resizable=false&disable_occlusion=true&title=" + encodeURIComponent("Burger");
+    var fb = "https://arvr.google.com/scene-viewer/1.2?" + q;
+    launched = true; launchedAt = Date.now(); placed = false;
+    location.href = "intent://arvr.google.com/scene-viewer/1.2?" + q + "#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=" + encodeURIComponent(fb) + ";end;";
+  }
+  $("arbtn").addEventListener("click", function(e){
+    e.stopImmediatePropagation(); e.preventDefault();
+    if (store.get("coached") === "1") startAR(); else $("coach").hidden = false;
+  }, true);
+  $("coachgo").addEventListener("click", function(){ store.set("coached", "1"); $("coach").hidden = true; startAR(); });
+  $("coach").addEventListener("click", function(e){ if (e.target === $("coach")) $("coach").hidden = true; });
+  if (android) { $("altbtn").hidden = false; $("backalt").hidden = false; }
+  $("altbtn").addEventListener("click", startSceneViewer);
+  $("backalt").addEventListener("click", function(){ $("back").hidden = true; startSceneViewer(); });
+  $("backagain").addEventListener("click", function(){ $("back").hidden = true; startAR(); });
+  $("backok").addEventListener("click", function(){ $("back").hidden = true; });
+  $("backcam").addEventListener("click", function(){ $("back").hidden = true; openCam(); });
+
+  /* detect return from AR without a placed object */
+  mv.addEventListener("ar-status", function(e){
+    var s = e.detail && e.detail.status;
+    if (s === "object-placed") placed = true;
+    if ((s === "failed" || s === "not-presenting") && launched && !placed) { launched = false; $("back").hidden = false; }
+    if (s === "not-presenting") launched = false;
+  });
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible" && launched && Date.now() - launchedAt > 1500) { launched = false; $("back").hidden = false; }
+  });
+
+  /* Quick view: camera feed + true-size burger, drag to move, no floor detection needed */
+  var cam = $("cam"), camv = $("camv"), stream = null;
+  var FOV = 60, dist = 0.7, yaw = 25, PHI = 80, pos = { x: 0, y: 0 }, cy = 0.35;
+  function visH(){ return 2 * dist * Math.tan(FOV * Math.PI / 360); }
+  function radius(){ var a = mv2.getFieldOfView ? mv2.getFieldOfView() : 45; if (!(a > 5 && a < 150)) a = 45; return dist * Math.tan(FOV * Math.PI / 360) / Math.tan(a * Math.PI / 360); }
+  function applyCam(jump){
+    /* camera looks straight down the z axis, tilted PHI; moving the target along the camera's own up axis keeps drag 1:1 under the finger */
+    var up = { y: Math.sin(PHI * Math.PI / 180), z: -Math.cos(PHI * Math.PI / 180) };
+    var s = pos.y - (0.12 * visH());
+    mv2.cameraTarget = (-pos.x).toFixed(3) + "m " + (cy - s * up.y).toFixed(3) + "m " + (-s * up.z).toFixed(3) + "m";
+    mv2.cameraOrbit = "0deg " + PHI + "deg " + radius().toFixed(3) + "m";
+    mv2.orientation = "0deg 0deg " + yaw + "deg";
+    $("camd").textContent = dist.toFixed(1) + " m";
+    if (jump && mv2.jumpCameraToGoal) mv2.jumpCameraToGoal();
+  }
+  /* model-viewer picks its own field of view, so we read it and place the camera at the distance that makes the burger
+     appear the same size a real phone camera (60 degree view) would show it at the chosen distance */
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+  function settle(){ return mv2.updateComplete.then(function(){ mv2.jumpCameraToGoal(); return sleep(200); }); }
+  mv2.addEventListener("load", function(){ cy = mv2.getBoundingBoxCenter().y; settle().then(function(){ applyCam(true); }); });
+  var rz = null; window.addEventListener("resize", function(){ clearTimeout(rz); rz = setTimeout(function(){ if (cam.style.display === "block") settle().then(function(){ applyCam(true); }); }, 250); });
+  function openCam(){
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { tip.textContent = "Quick view needs a browser that allows the camera. Open this page in Chrome or Safari."; return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false }).then(function(s){
+      stream = s; camv.srcObject = s; cam.style.display = "block"; pos = { x: 0, y: 0 }; applyCam(true);
+      camv.play && camv.play().catch(function(){});
+    }).catch(function(){ tip.textContent = "Camera permission was blocked. Allow the camera for this page and try again."; });
+  }
+  function closeCam(){ cam.style.display = "none"; if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } camv.srcObject = null; }
+  $("cambtn").addEventListener("click", openCam);
+  $("camx").addEventListener("click", closeCam);
+  $("camui").addEventListener("pointerdown", function(e){ e.stopPropagation(); });
+  $("camturnl").addEventListener("click", function(){ yaw -= 30; applyCam(false); });
+  $("camturnr").addEventListener("click", function(){ yaw += 30; applyCam(false); });
+  $("camnear").addEventListener("click", function(){ dist = Math.max(0.4, dist - 0.2); applyCam(false); });
+  $("camfar").addEventListener("click", function(){ dist = Math.min(2, dist + 0.2); applyCam(false); });
+  var drag = null;
+  cam.addEventListener("pointerdown", function(e){ if (e.target.closest("button")) return; drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; cam.setPointerCapture(e.pointerId); });
+  cam.addEventListener("pointermove", function(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    var mpp = visH() / (cam.clientHeight || window.innerHeight);
+    pos.x += (e.clientX - drag.x) * mpp; pos.y -= (e.clientY - drag.y) * mpp;
+    drag.x = e.clientX; drag.y = e.clientY; applyCam(true);
+  });
+  function endDrag(e){ if (drag && e.pointerId === drag.id) drag = null; }
+  cam.addEventListener("pointerup", endDrag); cam.addEventListener("pointercancel", endDrag);
+})();
+</script>
+<script type="module" src="model-viewer.min.js"></script>
+</body></html>
